@@ -17,12 +17,13 @@ display = tk.Label(root, text="0123456789", font=display_font, anchor="e")
 display.grid(row=0, column=0, columnspan=4, sticky="nesw")
 
 
-# Define keypress event handler
+# Process keypress
 def keypress(key):
     global current_result, right_value, left_value
     if key == "C":
         clear()
     elif key == "/":
+        # TODO: Math shouldn't be processed until the "=" key is pressed.
         current_result = str(int(left_value) / int(right_value))
     elif key == "*":
         current_result = str(int(left_value) * int(right_value))
@@ -60,10 +61,10 @@ def keypress(key):
 
 
 # Add buttons
-buttons = []
-function_text = ["C", "/", "*", "-", "+", "=", "."]
+buttons = []  # Stores the tkinter buttons
+function_text = ["C", "/", "*", "-", "+", "=", "."]  # Allows for looping to add the buttons
 
-# Add function buttons
+# Add function buttons to UI
 for i in range(7):
     button = tk.Button(root, text=function_text[i], command=lambda: keypress(function_text[i]))
     button.grid(row=i < 4 and 1 or i == 4 and 2 or i - 1,
@@ -77,7 +78,7 @@ for i in range(7):
     #   0123332 cols
     #   0123456 i
 
-# Add number buttons
+# Add number buttons to UI
 for i in range(10):
     button = tk.Button(root, text=f"{i}", command=lambda: keypress(str(i)))
     if i == 0:
@@ -96,11 +97,13 @@ root.rowconfigure("all", weight=1)
 
 
 def update_display():
+    # Update the display to the current value
     global right_value, display
     display["text"] = str(right_value)
 
 
 def clear():
+    # Clear all values and call the display update
     global left_value, right_value, current_result
     left_value = str(0)
     right_value = str(0)
