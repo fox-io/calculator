@@ -9,6 +9,7 @@ root.resizable(False, False)  # Do not allow resize
 # Calculation Variables
 left_value = 0
 right_value = 0
+current_function = ""
 current_result = 0
 
 # Add the display
@@ -19,19 +20,23 @@ display.grid(row=0, column=0, columnspan=4, sticky="nesw")
 
 # Process keypress
 def keypress(key):
-    global current_result, right_value, left_value
+
+    global current_result, right_value, left_value, current_function
     if key == "C":
         clear()
-    elif key == "/":
-        # TODO: Math shouldn't be processed until the "=" key is pressed.
-        current_result = str(int(left_value) / int(right_value))
-    elif key == "*":
-        current_result = str(int(left_value) * int(right_value))
-    elif key == "-":
-        current_result = str(int(left_value) - int(right_value))
-    elif key == "+":
-        current_result = str(int(left_value) + int(right_value))
+    elif key == "/" or key == "-" or key == "+" or key == "*":
+        current_function = key
+        left_value = right_value
+        right_value = "0"
     elif key == "=":
+        if current_function == "/":
+            current_result = str(int(left_value) / int(right_value))
+        elif current_function == "*":
+            current_result = str(int(left_value) * int(right_value))
+        elif current_function == "-":
+            current_result = str(int(left_value) - int(right_value))
+        elif current_function == "=":
+            current_result = str(int(left_value) + int(right_value))
         right_value = current_result
     elif key == "0":
         right_value = str(right_value) + "0"
@@ -66,7 +71,7 @@ function_text = ["C", "/", "*", "-", "+", "=", "."]  # Allows for looping to add
 
 # Add function buttons to UI
 for i in range(7):
-    button = tk.Button(root, text=function_text[i], command=lambda: keypress(function_text[i]))
+    button = tk.Button(root, text=function_text[i], command=lambda x=function_text[i]: keypress(x))
     button.grid(row=i < 4 and 1 or i == 4 and 2 or i - 1,
                 column=i == 6 and 2 or 6 > i > 3 and 3 or i,
                 rowspan=3 < i < 6 and 2 or 1,
@@ -80,7 +85,7 @@ for i in range(7):
 
 # Add number buttons to UI
 for i in range(10):
-    button = tk.Button(root, text=f"{i}", command=lambda: keypress(str(i)))
+    button = tk.Button(root, text=f"{i}", command=lambda x=str(i): keypress(x))
     if i == 0:
         button.grid(row=5, column=0, columnspan=2, sticky="nesw")
     if 1 <= i <= 3:
@@ -113,7 +118,7 @@ def clear():
 
 # Bind keys
 for i in range(10):
-    root.bind(str(i), lambda x: keypress(str(i)))
+    root.bind(str(i), lambda x: keypress(x.keysym))
 
 root.bind('<slash>', lambda x: keypress("/"))
 root.bind('<asterisk>', lambda x: keypress("*"))
