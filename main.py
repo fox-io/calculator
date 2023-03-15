@@ -7,10 +7,10 @@ root.geometry("200x300")
 root.resizable(False, False)  # Do not allow resize
 
 # Calculation Variables
-left_value = 0
-right_value = 0
+left_value = "0"
+right_value = "0"
 current_function = ""
-current_result = 0
+current_result = "0"
 
 # Add the display
 display_font = ("Consolas", 20)
@@ -35,29 +35,14 @@ def keypress(key):
             current_result = str(int(left_value) * int(right_value))
         elif current_function == "-":
             current_result = str(int(left_value) - int(right_value))
-        elif current_function == "=":
+        elif current_function == "+":
             current_result = str(int(left_value) + int(right_value))
         right_value = current_result
-    elif key == "0":
-        right_value = str(right_value) + "0"
-    elif key == "1":
-        right_value = str(right_value) + "1"
-    elif key == "2":
-        right_value = str(right_value) + "2"
-    elif key == "3":
-        right_value = str(right_value) + "3"
-    elif key == "4":
-        right_value = str(right_value) + "4"
-    elif key == "5":
-        right_value = str(right_value) + "5"
-    elif key == "6":
-        right_value = str(right_value) + "6"
-    elif key == "7":
-        right_value = str(right_value) + "7"
-    elif key == "8":
-        right_value = str(right_value) + "8"
-    elif key == "9":
-        right_value = str(right_value) + "9"
+    else:
+        if right_value == "0":
+            right_value = key
+        else:
+            right_value = str(right_value) + key
 
     update_display()
 
