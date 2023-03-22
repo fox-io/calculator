@@ -3,6 +3,12 @@ import pygame
 # Initialize Pygame
 pygame.init()
 
+# Variables
+left_value = 0
+right_value = 0
+operator = None
+result = 0
+
 # Make Window
 window_size = (300, 475)
 screen = pygame.display.set_mode(window_size)
