@@ -96,21 +96,23 @@ class Calculator:
         elif self.operator == "*":
             self.result = str(float(self.left_value) * float(self.right_value))
         elif self.operator == "/":
+            # Check for division by zero
             if self.right_value == "0":
                 self.result = "E"
+                self.clear()
+                return 0
             else:
                 self.result = str(float(self.left_value) / float(self.right_value))
-        if self.result == "E":
-            self.clear()
-        else:
-            self.left_value = self.result
-            # Temporarily set the right value to the result so that it will be displayed
-            self.right_value = self.result
-            self.update_display()
-            # Clear the right value so that the next number will be appended
-            self.right_value = "0"
-            # Clear the operator so that the next button push will be treated as the first value of a new expression
-            self.operator = None
+
+        # Set the left value to the result so that it will be used in the next expression
+        self.left_value = self.result
+        # Temporarily set the right value to the result so that it will be displayed
+        self.right_value = self.result
+        self.update_display()
+        # Clear the right value so that the next number will be appended
+        self.right_value = "0"
+        # Clear the operator so that the next button push will be treated as the first value of a new expression
+        self.operator = None
 
     def button_handler(self, pushed_button):
         # Handles button pushes.
@@ -125,7 +127,12 @@ class Calculator:
             if self.operator is not None:
                 self.evaluate()
             else:
-                self.left_value = self.right_value
+                # If we have a result from previously, use it as left_value, otherwise use the right value.
+                if self.result != "0":
+                    self.left_value = self.result
+                else:
+                    self.left_value = self.right_value
+
                 # Update display before clearing the right value
                 self.update_display()
                 self.right_value = "0"
