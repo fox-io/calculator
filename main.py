@@ -10,14 +10,13 @@ class Calculator:
     debug = True
 
     # Define Variables
-    left_value = 0
-    right_value = 0
+    left_value = "0"
+    right_value = "0"
     operator = None
-    result = 0
+    result = "0"
 
-    display = {}
     window = pygame.display.set_mode((300, 475))
-    pygame.display.set_caption("Calculator")
+    display = {}
 
     key_codes = {pygame.K_ESCAPE: "C", pygame.K_KP_DIVIDE: "/", pygame.K_SLASH: "/", pygame.K_KP_MULTIPLY: "*",
                  pygame.K_ASTERISK: "*", pygame.K_KP_MINUS: "-", pygame.K_MINUS: "-", pygame.K_KP_PLUS: "+",
@@ -36,6 +35,15 @@ class Calculator:
     colors = {'black': (0, 0, 0), 'grey': (128, 128, 128), 'light_grey': (192, 192, 192), 'white': (255, 255, 255)}
     buttons = {}
 
+    def __init__(self):
+        pygame.display.set_caption("Calculator")
+        self.window.fill(self.colors['white'])
+
+        self.make_display()
+        self.make_buttons()
+
+        pygame.display.flip()
+
     def make_buttons(self):
         for label, bounds in self.button_setup.items():
             button = {}
@@ -51,24 +59,73 @@ class Calculator:
         self.display['display'] = pygame.Rect(0, 0, 300, 100)
         self.display['surface'] = pygame.draw.rect(self.window, self.colors['white'], self.display['display'])
         self.display['border'] = pygame.draw.rect(self.window, self.colors['grey'], self.display['display'], 1)
-        self.display['text'] = self.font.render("0", True, self.colors['black'])
+        self.update_display()
+
+    def update_display(self):
+        # Fill and update the display area to erase the previous value
+        self.window.fill(self.colors['white'], (1, 1, 299, 99))
+        pygame.display.update(self.display['display'])
+
+        # Render the new value
+        self.display['text'] = self.font.render(self.right_value, True, self.colors['black'])
         self.window.blit(self.display['text'],
                          self.display['text'].get_rect(right=self.display['display'].right - 10,
                                                        centery=self.display['display'].centery))
+        pygame.display.update(self.display['display'])
 
-    def __init__(self):
-        self.window.fill(self.colors['white'])
+    def clear(self):
+        self.left_value = "0"
+        self.right_value = "0"
+        self.operator = None
+        self.result = "0"
+        self.update_display()
 
-        self.make_display()
-        self.make_buttons()
+    def evaluate(self):
+        # Evaluate the expression
+        if self.operator == "+":
+            self.result = str(float(self.left_value) + float(self.right_value))
+        elif self.operator == "-":
+            self.result = str(float(self.left_value) - float(self.right_value))
+        elif self.operator == "*":
+            self.result = str(float(self.left_value) * float(self.right_value))
+        elif self.operator == "/":
+            self.result = str(float(self.left_value) / float(self.right_value))
+        self.left_value = self.result
+        self.right_value = "0"
+        self.operator = None
 
-        pygame.display.flip()
+        # Update the display
+        self.update_display()
 
     def button_handler(self, pushed_button):
         # Handles button pushes.
-        if self.debug:
-            print("Button Pressed: " + pushed_button)
-        return 0
+        if pushed_button == "C":
+            self.clear()
+            return 0
+        elif pushed_button == "=":
+            self.evaluate()
+            return 0
+        elif pushed_button == "+" or pushed_button == "-" or pushed_button == "*" or pushed_button == "/":
+            if self.operator is not None:
+                self.evaluate()
+            else:
+                self.left_value = self.right_value
+                self.right_value = "0"
+                self.operator = pushed_button
+            self.update_display()
+            return 0
+        elif pushed_button == ".":
+            if "." not in self.right_value:
+                self.right_value += pushed_button
+            self.update_display()
+            return 0
+        else:
+            if self.right_value == "0":
+                self.right_value = pushed_button
+            else:
+                self.right_value += pushed_button
+            self.update_display()
+            return 0
 
     def click_handler(self, clicked_position):
         # Translates clicks into button pushes if the click happened inside a button.
