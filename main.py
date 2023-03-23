@@ -19,6 +19,14 @@ class Calculator:
     window = pygame.display.set_mode((300, 475))
     pygame.display.set_caption("Calculator")
 
+    key_codes = {pygame.K_ESCAPE: "C", pygame.K_KP_DIVIDE: "/", pygame.K_SLASH: "/", pygame.K_KP_MULTIPLY: "*",
+                 pygame.K_ASTERISK: "*", pygame.K_KP_MINUS: "-", pygame.K_MINUS: "-", pygame.K_KP_PLUS: "+",
+                 pygame.K_PLUS: "+", pygame.K_KP_ENTER: "=", pygame.K_RETURN: "=", pygame.K_KP0: "0",
+                 pygame.K_0: "0", pygame.K_KP1: "1", pygame.K_1: "1", pygame.K_KP2: "2", pygame.K_2: "2",
+                 pygame.K_KP3: "3", pygame.K_3: "3", pygame.K_KP4: "4", pygame.K_4: "4", pygame.K_KP5: "5",
+                 pygame.K_5: "5", pygame.K_KP6: "6", pygame.K_6: "6", pygame.K_KP7: "7", pygame.K_7: "7",
+                 pygame.K_KP8: "8", pygame.K_8: "8", pygame.K_KP9: "9", pygame.K_9: "9", pygame.K_KP_PERIOD: ".",
+                 pygame.K_PERIOD: "."}
     font = pygame.font.SysFont("Consolas", 20)
     button_setup = {"C": (0, 100, 75, 75), "/": (75, 100, 75, 75), "*": (150, 100, 75, 75), "-": (225, 100, 75, 75),
                     "+": (225, 175, 75, 150), "=": (225, 325, 75, 150), "0": (0, 400, 150, 75), "1": (0, 325, 75, 75),
@@ -35,6 +43,7 @@ class Calculator:
             button['surface'] = pygame.draw.rect(self.window, self.colors['light_grey'], button['button'])
             button['border'] = pygame.draw.rect(self.window, self.colors['grey'], button['button'], 1)
             button['text'] = self.font.render(label, True, self.colors['black'])
+            button['code'] = label
             self.window.blit(button['text'], button['text'].get_rect(center=button['button'].center))
             self.buttons[label] = button
 
@@ -55,15 +64,26 @@ class Calculator:
 
         pygame.display.flip()
 
-    def button_handler(self, x):
-        if x == "C":
-            self.left_value = 0
-            self.right_value = 0
-            self.operator = None
-            self.result = 0
+    def button_handler(self, pushed_button):
         if self.debug:
-            print(x)
+            print("Button Pressed: " + pushed_button)
         return 0
+
+    def is_clicked(self, pos):
+        # Check if a button is clicked
+        for button in self.buttons:
+            if self.buttons[button]['button'].collidepoint(pos):
+                return self.buttons[button]['code']
+        # If no button is clicked, return False
+        return None
+
+    def is_valid_key(self, key):
+        # Check if a key is valid
+        for key_code, key_text in self.key_codes.items():
+            if event.key == key_code:
+                return key_text
+        # If no key is valid, return False
+        return None
 
 
 # Main Loop
@@ -74,75 +94,14 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        # elif event.type == pygame.MOUSEBUTTONDOWN:
-        #     if button_c.collidepoint(event.pos):
-        #         button_handler("C")
-        #     elif button_div.collidepoint(event.pos):
-        #         button_handler("/")
-        #     elif button_mul.collidepoint(event.pos):
-        #         button_handler("*")
-        #     elif button_sub.collidepoint(event.pos):
-        #         button_handler("-")
-        #     elif button_add.collidepoint(event.pos):
-        #         button_handler("+")
-        #     elif button_eq.collidepoint(event.pos):
-        #         button_handler("=")
-        #     elif button_0.collidepoint(event.pos):
-        #         button_handler("0")
-        #     elif button_1.collidepoint(event.pos):
-        #         button_handler("1")
-        #     elif button_2.collidepoint(event.pos):
-        #         button_handler("2")
-        #     elif button_3.collidepoint(event.pos):
-        #         button_handler("3")
-        #     elif button_4.collidepoint(event.pos):
-        #         button_handler("4")
-        #     elif button_5.collidepoint(event.pos):
-        #         button_handler("5")
-        #     elif button_6.collidepoint(event.pos):
-        #         button_handler("6")
-        #     elif button_7.collidepoint(event.pos):
-        #         button_handler("7")
-        #     elif button_8.collidepoint(event.pos):
-        #         button_handler("8")
-        #     elif button_9.collidepoint(event.pos):
-        #         button_handler("9")
-        #     elif button_dot.collidepoint(event.pos):
-        #         button_handler(".")
-        # elif event.type == pygame.KEYDOWN:
-        #     if event.key == pygame.K_ESCAPE:
-        #         button_handler("C")
-        #     elif event.key == pygame.K_KP_DIVIDE or event.key == pygame.K_SLASH:
-        #         button_handler("/")
-        #     elif event.key == pygame.K_KP_MULTIPLY or event.key == pygame.K_ASTERISK:
-        #         button_handler("*")
-        #     elif event.key == pygame.K_KP_MINUS or event.key == pygame.K_MINUS:
-        #         button_handler("-")
-        #     elif event.key == pygame.K_KP_PLUS or event.key == pygame.K_PLUS:
-        #         button_handler("+")
-        #     elif event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
-        #         button_handler("=")
-        #     elif event.key == pygame.K_KP0 or event.key == pygame.K_0:
-        #         button_handler("0")
-        #     elif event.key == pygame.K_KP1 or event.key == pygame.K_1:
-        #         button_handler("1")
-        #     elif event.key == pygame.K_KP2 or event.key == pygame.K_2:
-        #         button_handler("2")
-        #     elif event.key == pygame.K_KP3 or event.key == pygame.K_3:
-        #         button_handler("3")
-        #     elif event.key == pygame.K_KP4 or event.key == pygame.K_4:
-        #         button_handler("4")
-        #     elif event.key == pygame.K_KP5 or event.key == pygame.K_5:
-        #         button_handler("5")
-        #     elif event.key == pygame.K_KP6 or event.key == pygame.K_6:
-        #         button_handler("6")
-        #     elif event.key == pygame.K_KP7 or event.key == pygame.K_7:
-        #         button_handler("7")
-        #     elif event.key == pygame.K_KP8 or event.key == pygame.K_8:
-        #         button_handler("8")
-        #     elif event.key == pygame.K_KP9 or event.key == pygame.K_9:
-        #         button_handler("9")
-        #     elif event.key == pygame.K_KP_PERIOD or event.key == pygame.K_PERIOD:
-        #         button_handler(".")
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            button_clicked = app.is_clicked(event.pos)
+            if button_clicked:
+                app.button_handler(button_clicked)
+        elif event.type == pygame.KEYDOWN:
+            valid_key = app.is_valid_key(event.key)
+            if valid_key:
+                app.button_handler(valid_key)
+
 
 pygame.quit()
