@@ -74,7 +74,7 @@ class Calculator:
         for button in self.buttons:
             if self.buttons[button]['button'].collidepoint(pos):
                 return self.buttons[button]['code']
-        # If no button is clicked, return False
+        # If no button is clicked, return None
         return None
 
     def is_valid_key(self, key):
@@ -82,8 +82,18 @@ class Calculator:
         for key_code, key_text in self.key_codes.items():
             if event.key == key_code:
                 return key_text
-        # If no key is valid, return False
+        # If no key is valid, return None
         return None
+
+    def click_handler(self, pos):
+        button_clicked = self.is_clicked(pos)
+        if button_clicked:
+            self.button_handler(button_clicked)
+
+    def key_handler(self, key):
+        valid_key = self.is_valid_key(event.key)
+        if valid_key:
+            self.button_handler(valid_key)
 
 
 # Main Loop
@@ -95,13 +105,9 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            button_clicked = app.is_clicked(event.pos)
-            if button_clicked:
-                app.button_handler(button_clicked)
+            app.click_handler(event.pos)
         elif event.type == pygame.KEYDOWN:
-            valid_key = app.is_valid_key(event.key)
-            if valid_key:
-                app.button_handler(valid_key)
+            app.key_handler(event.key)
 
 
 pygame.quit()
