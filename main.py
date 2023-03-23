@@ -65,39 +65,28 @@ class Calculator:
         pygame.display.flip()
 
     def button_handler(self, pushed_button):
+        # Handles button pushes.
         if self.debug:
             print("Button Pressed: " + pushed_button)
         return 0
 
-    def is_clicked(self, pos):
-        # Check if a button is clicked
+    def click_handler(self, clicked_position):
+        # Translates clicks into button pushes if the click happened inside a button.
         for button in self.buttons:
-            if self.buttons[button]['button'].collidepoint(pos):
-                return self.buttons[button]['code']
-        # If no button is clicked, return None
-        return None
+            if self.buttons[button]['button'].collidepoint(clicked_position):
+                self.button_handler(self.buttons[button]['code'])
 
-    def is_valid_key(self, key):
-        # Check if a key is valid
+    def key_handler(self, pressed_key_code):
+        # Translates key presses into button pushes if the key is a valid button.
         for key_code, key_text in self.key_codes.items():
-            if event.key == key_code:
-                return key_text
-        # If no key is valid, return None
-        return None
+            if pressed_key_code == key_code:
+                self.button_handler(key_text)
 
-    def click_handler(self, pos):
-        button_clicked = self.is_clicked(pos)
-        if button_clicked:
-            self.button_handler(button_clicked)
 
-    def key_handler(self, key):
-        valid_key = self.is_valid_key(event.key)
-        if valid_key:
-            self.button_handler(valid_key)
-
+# Create Calculator
+app = Calculator()
 
 # Main Loop
-app = Calculator()
 running = True
 while running:
     # Handle events
