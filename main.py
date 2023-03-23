@@ -77,8 +77,15 @@ class Calculator:
         self.left_value = "0"
         self.right_value = "0"
         self.operator = None
-        self.result = "0"
-        self.update_display()
+        # If the result was an error, display "E", but continue clearing everything else.
+        if self.result == "E":
+            self.right_value = "E"
+            self.update_display()
+            self.right_value = "0"
+            self.result = "0"
+        else:
+            self.result = "0"
+            self.update_display()
 
     def evaluate(self):
         # Evaluate the expression
@@ -89,15 +96,21 @@ class Calculator:
         elif self.operator == "*":
             self.result = str(float(self.left_value) * float(self.right_value))
         elif self.operator == "/":
-            self.result = str(float(self.left_value) / float(self.right_value))
-        self.left_value = self.result
-        # Temporarily set the right value to the result so that it will be displayed
-        self.right_value = self.result
-        self.update_display()
-        # Clear the right value so that the next number will be appended
-        self.right_value = "0"
-        # Clear the operator so that the next button push will be treated as the first value of a new expression
-        self.operator = None
+            if self.right_value == "0":
+                self.result = "E"
+            else:
+                self.result = str(float(self.left_value) / float(self.right_value))
+        if self.result == "E":
+            self.clear()
+        else:
+            self.left_value = self.result
+            # Temporarily set the right value to the result so that it will be displayed
+            self.right_value = self.result
+            self.update_display()
+            # Clear the right value so that the next number will be appended
+            self.right_value = "0"
+            # Clear the operator so that the next button push will be treated as the first value of a new expression
+            self.operator = None
 
     def button_handler(self, pushed_button):
         # Handles button pushes.
