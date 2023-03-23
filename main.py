@@ -91,11 +91,13 @@ class Calculator:
         elif self.operator == "/":
             self.result = str(float(self.left_value) / float(self.right_value))
         self.left_value = self.result
-        self.right_value = "0"
-        self.operator = None
-
-        # Update the display
+        # Temporarily set the right value to the result so that it will be displayed
+        self.right_value = self.result
         self.update_display()
+        # Clear the right value so that the next number will be appended
+        self.right_value = "0"
+        # Clear the operator so that the next button push will be treated as the first value of a new expression
+        self.operator = None
 
     def button_handler(self, pushed_button):
         # Handles button pushes.
@@ -106,13 +108,15 @@ class Calculator:
             self.evaluate()
             return 0
         elif pushed_button == "+" or pushed_button == "-" or pushed_button == "*" or pushed_button == "/":
+            # If an operator is already set, evaluate the expression first.
             if self.operator is not None:
                 self.evaluate()
             else:
                 self.left_value = self.right_value
+                # Update display before clearing the right value
+                self.update_display()
                 self.right_value = "0"
                 self.operator = pushed_button
-            self.update_display()
             return 0
         elif pushed_button == ".":
             if "." not in self.right_value:
